@@ -62,7 +62,9 @@ export const AddEnemyModal: React.FC<AddEnemyModalProps> = ({
     e.preventDefault();
 
     // Validate type
-    if (!["Static", "Rotating", "Moving", "StrongMoving"].includes(type)) {
+    if (
+      !["Static", "Rotating", "Moving", "StrongMoving", "Laser"].includes(type)
+    ) {
       alert("Invalid enemy type");
       return;
     }
@@ -103,6 +105,7 @@ export const AddEnemyModal: React.FC<AddEnemyModalProps> = ({
               <option value="Rotating">Rotating</option>
               <option value="Moving">Moving</option>
               <option value="StrongMoving">Strong Moving</option>
+              <option value="Laser">Laser</option>
             </select>
           </label>
         </div>
