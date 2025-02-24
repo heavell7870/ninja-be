@@ -1,0 +1,1062 @@
+{
+    "Region": "LavaLand", // GrassLand, LavaLand, IceLand, StormyLand
+    "Nodes": [
+        {
+            "NodeTag": "Node 0", // Node {node number (0-x)}
+            "Levels": [
+                {
+                    "LevelTag": "Level 3", // Level {level number (1-3)}
+                    "NodesPosition": { // unity editor
+                        "x": 4.650000095367432,
+                        "y": 0.5,
+                        "z": 8.699999809265137
+                    },
+                    "EndGateTransform": { // unity editor
+                        "position": {
+                            "x": 13.75,
+                            "y": 0.09000000357627869,
+                            "z": -2.390000104904175
+                        },
+                        "eulerAngles": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        }
+                    },
+                    "Props": [], // unity editor
+                    "SubNodes": [ // only nodes that will be active from start
+                        {
+                            "Index": 6, // node index
+                            "Paths": [ // (0-4) clockwise -> (up-right-bottom-left)
+                                2
+                            ],
+                            "NeighbourNodes": [ // (0-4) clockwise (cannotGo Value)
+                                false,
+                                true,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [ // (0-4) clockwise (cannotGo Value)
+                                true,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 8,
+                            "Paths": [
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                true,
+                                false,
+                                true
+                            ],
+                            "JumpNodes": [
+                                true,
+                                false,
+                                true
+                            ]
+                        },
+                        {
+                            "Index": 9,
+                            "Paths": [
+                                1
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                true,
+                                true
+                            ],
+                            "JumpNodes": [
+                                false,
+                                true,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 10,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                true,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 11,
+                            "Paths": [
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 12,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                true
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 13,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 14,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 15,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                true,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                true,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 16,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 17,
+                            "Paths": [
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 18,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                true
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 19,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                true,
+                                false,
+                                false,
+                                true
+                            ]
+                        },
+                        {
+                            "Index": 20,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 21,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                true,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 22,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                true,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 23,
+                            "Paths": [
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 24,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                true
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 25,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                true
+                            ]
+                        },
+                        {
+                            "Index": 26,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 27,
+                            "Paths": [
+                                1,
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 28,
+                            "Paths": [
+                                1
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 29,
+                            "Paths": [
+                                2
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 30,
+                            "Paths": [
+                                1
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 31,
+                            "Paths": [
+                                1
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                true,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 32,
+                            "Paths": [
+                                1
+                            ],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                true,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 33,
+                            "Paths": [],
+                            "NeighbourNodes": [
+                                false,
+                                true,
+                                false,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                true,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "Index": 35,
+                            "Paths": [],
+                            "NeighbourNodes": [
+                                false,
+                                false,
+                                true,
+                                false
+                            ],
+                            "JumpNodes": [
+                                false,
+                                false,
+                                true,
+                                false
+                            ]
+                        }
+                    ],
+                    "EndNode": 9, // node index from sub nodes index
+                    "SpawnObjects": [
+                        {
+                            "Tag": "Player", // tag to spawn player
+                            "NodeIndex": 32, // spawn node index
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 90, // direction -> (0, 90, 180, -90) clockwise
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "DamageNode", // tag to spawn elemental damage
+                            "NodeIndex": 11,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "DamageNode",
+                            "NodeIndex": 11,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "DamageNode",
+                            "NodeIndex": 17,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "DamageNode",
+                            "NodeIndex": 20,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "DamageNode",
+                            "NodeIndex": 28,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "DamageNode",
+                            "NodeIndex": 33,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "Key", // tag to spawn key for reward cage
+                            "NodeIndex": 30,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        },
+                        {
+                            "Tag": "RewardCage", // tag to spawn reward cage
+                            "NodeIndex": 35,
+                            "CustomTransform": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "eulerAngles": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                "localScale": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            }
+                        }
+                    ],
+                    "Traps": [
+                        {
+                            "TrapObject": { // trapObject
+                                "Tag": "Turret", // tag to spawn turret trap
+                                "NodeIndex": 35, // node index
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": -90, // facing
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "TrapTrigger": { // trapObject's Trigger
+                                "Tag": "TurretTrigger", // tag to spawn trigger which interacts with turret
+                                "NodeIndex": 19,
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "TrapType": "Turret", // Wall, Turret
+                            "CamPan": true // when interact cam pans
+                        }
+                    ],
+                    "TriggerTraps": [], // unity editor
+                    "Enemies": [
+                        {
+                            "Object": {
+                                "Tag": "Enemy",
+                                "NodeIndex": 24,
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": 180, // facing
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "Type": "Static", // Static, Rotating, Moving, StrongMoving
+                            "Spawnable": true, // set true to spawn enemy from start (false when it is spawned from trap)
+                            "RotateAntiClockwise": false // for rotating enemy type
+                        },
+                        {
+                            "Object": {
+                                "Tag": "Enemy",
+                                "NodeIndex": 22,
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": 180,
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "Type": "Rotating",
+                            "Spawnable": true,
+                            "RotateAntiClockwise": true
+                        },
+                        {
+                            "Object": {
+                                "Tag": "Enemy",
+                                "NodeIndex": 10,
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": -90,
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "Type": "Rotating",
+                            "Spawnable": true,
+                            "RotateAntiClockwise": true
+                        },
+                        {
+                            "Object": {
+                                "Tag": "Enemy",
+                                "NodeIndex": 25,
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": -90,
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "Type": "Moving",
+                            "Spawnable": true,
+                            "RotateAntiClockwise": true
+                        },
+                        {
+                            "Object": {
+                                "Tag": "Enemy",
+                                "NodeIndex": 12,
+                                "CustomTransform": {
+                                    "position": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    },
+                                    "eulerAngles": {
+                                        "x": 0,
+                                        "y": 180,
+                                        "z": 0
+                                    },
+                                    "localScale": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 0
+                                    }
+                                }
+                            },
+                            "Type": "Moving",
+                            "Spawnable": true,
+                            "RotateAntiClockwise": true
+                        }
+                    ],
+                    "Portals": [], // unity editor
+                    "NewPaths": [
+                        {
+                            "IndexA": 31, // trigger A
+                            "IndexB": 5, // trigger B
+                            "JointA": 31, // joint A   path will be formed from A to B
+                            "JointB": 5, //joint B
+                            "NodesToUnlock": [ // add respective node index and their paths, neighbour and jump nodes same like "SubNodes"
+                                {
+                                    "Index": 25,
+                                    "Paths": [
+                                        0,
+                                        2
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        false,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false,
+                                        true
+                                    ]
+                                },
+                                {
+                                    "Index": 13,
+                                    "Paths": [
+                                        2
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        true,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false,
+                                        true
+                                    ]
+                                },
+                                {
+                                    "Index": 7,
+                                    "Paths": [
+                                        2
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        false,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ]
+                                },
+                                {
+                                    "Index": 1,
+                                    "Paths": [
+                                        1,
+                                        2
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ]
+                                },
+                                {
+                                    "Index": 2,
+                                    "Paths": [
+                                        1
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ]
+                                },
+                                {
+                                    "Index": 3,
+                                    "Paths": [
+                                        1
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ]
+                                },
+                                {
+                                    "Index": 4,
+                                    "Paths": [
+                                        1
+                                    ],
+                                    "NeighbourNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ],
+                                    "JumpNodes": [
+                                        false,
+                                        false,
+                                        false
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "Objectives": [], // unity editor
+                    "Restrictons": { // if value = - 1 restriction is not applied
+                        "Time": -1, // time to finish
+                        "Moves": -1, // limited moves
+                        "EnemyKills": -1 // kills needed
+                    },
+                    "Bounds": { // camera panning clamp values
+                        "BoundsX": {
+                            "x": -10,
+                            "y": 10
+                        },
+                        "BoundsY": {
+                            "x": 10,
+                            "y": 14.5
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
