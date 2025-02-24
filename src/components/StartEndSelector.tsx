@@ -9,12 +9,7 @@ interface StartEndSelectorProps {
   onSetEnd: (x: number, y: number) => void;
 }
 
-const StartEndSelector: React.FC<StartEndSelectorProps> = ({
-  start,
-  end,
-  onSetStart,
-  onSetEnd,
-}) => {
+const StartEndSelector: React.FC<StartEndSelectorProps> = ({ start, end }) => {
   return (
     <div className="flex space-x-4">
       <button
