@@ -2,7 +2,7 @@ import axios from "axios";
 import { Region } from "../types";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:3003", // Replace with your actual API base URL
+  baseURL: "https://closet.sochil.io", // Replace with your actual API base URL
   headers: {
     "Content-Type": "application/json",
   },
