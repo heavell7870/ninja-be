@@ -3,10 +3,14 @@ import { EnemyData, Level, SubNode } from "../types";
 import { AddEnemyModal } from "../modals/add-enemy";
 import { AddStartModal } from "../modals/add-start";
 import { aabr } from "../constants";
+import { AddTrapModal } from "../modals/add-trap-Trigger";
 
 interface BlockProps {
+  isAddingTrap: boolean;
   onAddNewPath: (blockIndex: number) => void;
   onAddEnemy: (blockIndex: number, enemyData: EnemyData) => void;
+  onAddTrapObject: (blockIndex: number, direction: number) => void;
+  onAddTrapTrigger: (blockIndex: number, direction: number) => void;
   onAddPath: (currBlockIndex: number) => void;
   onNormalClick: (blockIndex: number) => void;
   onStartSelect: (blockIndex: number, angle: number) => void;
@@ -45,6 +49,7 @@ function DirectionBox({
 }
 
 const Block: React.FC<BlockProps> = ({
+  isAddingTrap,
   onAddEnemy,
   onAddNewPath,
   onStartSelect,
@@ -56,6 +61,8 @@ const Block: React.FC<BlockProps> = ({
   onAddDamageNode,
   onAddNewPathIndexA,
   onAddNewPathIndexB,
+  onAddTrapObject,
+  onAddTrapTrigger,
   data,
   blockIndex,
 }) => {
@@ -63,6 +70,7 @@ const Block: React.FC<BlockProps> = ({
   const [clickedIndex, setClickedIndex] = useState<number>();
   const [isAddEnemyModalOpen, setIsAddEnemyModalOpen] = useState(false);
   const [startModal, setStartModal] = useState(false);
+  const [trapModal, setTrapModal] = useState<"trigger" | "trap" | null>(null);
   const [pressedKey, setPressedKey] = useState<string>("");
   const [blockType, setBlockType] = useState<
     | "start"
@@ -104,6 +112,18 @@ const Block: React.FC<BlockProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent default selection behavior
     setClickedIndex(blockIndex);
+    if (isAddingTrap && pressedKey === "t") {
+      setTrapModal("trigger");
+      return;
+    }
+    if (isAddingTrap && pressedKey === "o") {
+      setTrapModal("trap");
+      return;
+    }
+    if (isAddingTrap) {
+      alert("Complete adding trap using keys t and r");
+      return;
+    }
     if (pressedKey === "x") {
       onAddPath(blockIndex);
       return;
@@ -168,7 +188,7 @@ const Block: React.FC<BlockProps> = ({
       case "enemyStrongMoving":
         return "bg-orange-500"; // Orange for strong moving enemies
       case "trap":
-        return "bg-rose-500"; // Rose for traps
+        return "bg-fuchsia-500"; // Fuchsia for traps
       case "trigger":
         return "bg-cyan-500"; // Cyan for triggers
       case "selected":
@@ -296,6 +316,18 @@ const Block: React.FC<BlockProps> = ({
         isOpen={startModal}
         onClose={() => setStartModal(false)}
         onSubmit={(direction) => onStartSelect(blockIndex, direction)}
+      />
+      <AddTrapModal
+        isTrigger={trapModal === "trigger"}
+        isOpen={trapModal !== null}
+        onClose={() => setTrapModal(null)}
+        onSubmit={({ direction }) => {
+          if (trapModal === "trigger") {
+            onAddTrapTrigger(blockIndex, direction);
+          } else {
+            onAddTrapObject(blockIndex, direction);
+          }
+        }}
       />
     </>
   );

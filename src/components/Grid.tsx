@@ -16,9 +16,13 @@ interface GridProps {
   onAddNewPathIndexB: (blockIndex: number) => void;
   onAddNewPath: (blockIndex: number) => void;
   data: Level;
+  isAddingTrap: boolean;
+  onAddTrapObject: (blockIndex: number, direction: number) => void;
+  onAddTrapTrigger: (blockIndex: number, direction: number) => void;
 }
 
 const Grid: React.FC<GridProps> = ({
+  isAddingTrap,
   onAddEnemy,
   onAddPath,
   onNormalClick,
@@ -30,6 +34,8 @@ const Grid: React.FC<GridProps> = ({
   onAddNewPathIndexA,
   onAddNewPathIndexB,
   onAddNewPath,
+  onAddTrapObject,
+  onAddTrapTrigger,
   data,
 }) => {
   const [prevClickedIndex, setPrevClickedIndex] = useState<number>();
@@ -41,6 +47,13 @@ const Grid: React.FC<GridProps> = ({
             key={item}
             data={data}
             blockIndex={item}
+            isAddingTrap={isAddingTrap}
+            onAddTrapObject={(currIndex, direction) =>
+              onAddTrapObject(currIndex, direction)
+            }
+            onAddTrapTrigger={(currIndex, direction) =>
+              onAddTrapTrigger(currIndex, direction)
+            }
             onAddEnemy={(currIndex, enemyData) =>
               onAddEnemy(currIndex, enemyData)
             }

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Grid from "../components/Grid";
 import LevelPreview from "../components/LevelPreview";
-import { EnemyData, Level } from "../types";
+import { EnemyData, Level, TrapTrigger } from "../types";
 import { useData } from "../hooks/data";
 import { useParams } from "react-router";
 import { aabr, NODES, resetLevelData } from "../constants";
@@ -19,12 +19,15 @@ const keyInstructions = [
   { key: "n", action: "Add New Path Index A" },
   { key: "m", action: "Add New Path Index B" },
   { key: "p", action: "Add New Path" },
+  { key: "t", action: "Add Trap" },
+  { key: "o", action: "Add Trap Object" },
 ];
 
 const LevelConfiguration: React.FC = () => {
   const { data, setData } = useData();
   const { region, level } = useParams();
   const [levelData, setLevelData] = useState<Level>();
+  const [isAddingTrap, setIsAddingTrap] = useState(false);
 
   useEffect(() => {
     if (data && !levelData) {
@@ -102,109 +105,217 @@ const LevelConfiguration: React.FC = () => {
 
   const saveLevel = (data: Level) => {
     if (!data) return;
+    setLevelData(data);
     setData((prevData) => {
       if (!prevData) return prevData;
       const updatedData = { ...prevData };
-      updatedData.Nodes.find((n) => n.NodeTag === region)?.Levels.push(data);
+      const selectedNodeIndex = updatedData.Nodes.findIndex(
+        (n) => n.NodeTag === region
+      );
+      if (selectedNodeIndex !== -1) {
+        const selectedLevelIndex = updatedData.Nodes[
+          selectedNodeIndex
+        ].Levels.findIndex((l) => l.LevelTag === level);
+        if (selectedLevelIndex !== -1) {
+          updatedData.Nodes[selectedNodeIndex].Levels[selectedLevelIndex] =
+            data;
+        }
+      }
       return updatedData;
     });
   };
 
+  const generateJumpNodesForMainPath = (newData: Level) => {
+    const subNodes = [...(newData.SubNodes || [])];
+
+    // Helper function to find node position
+    const findNodePosition = (nodeIndex: number) => {
+      let row = -1,
+        col = -1;
+      NODES.forEach((r, i) => {
+        const c = r.indexOf(nodeIndex);
+        if (c > -1) {
+          row = i;
+          col = c;
+        }
+      });
+      return { row, col };
+    };
+
+    // Helper function to check if nodes are connected in a direction
+    const areNodesConnectedInDirection = (
+      node1Index: number,
+      node2Index: number,
+      direction: number
+    ) => {
+      const node1 = subNodes.find((n) => n.Index === node1Index);
+      const node2 = subNodes.find((n) => n.Index === node2Index);
+
+      if (!node1 || !node2) return false;
+
+      // Check if either node points to the other in the specified direction
+      if (direction === 0) {
+        // Up
+        return node1.Paths.includes(0) || node2.Paths.includes(2);
+      } else if (direction === 1) {
+        // Right
+        return node1.Paths.includes(1) || node2.Paths.includes(3);
+      } else if (direction === 2) {
+        // Down
+        return node1.Paths.includes(2) || node2.Paths.includes(0);
+      } else if (direction === 3) {
+        // Left
+        return node1.Paths.includes(3) || node2.Paths.includes(1);
+      }
+      return false;
+    };
+
+    subNodes.forEach((node) => {
+      const { row, col } = findNodePosition(node.Index);
+      const jumpNodes = [false, false, false, false];
+
+      // Check Up (0)
+      if (row >= 1) {
+        const upIndex = NODES[row - 1][col];
+        if (areNodesConnectedInDirection(node.Index, upIndex, 0)) {
+          jumpNodes[0] = true;
+        }
+      }
+
+      // Check Right (1)
+      if (col <= NODES[0].length - 2) {
+        const rightIndex = NODES[row][col + 1];
+        if (areNodesConnectedInDirection(node.Index, rightIndex, 1)) {
+          jumpNodes[1] = true;
+        }
+      }
+
+      // Check Down (2)
+      if (row <= NODES.length - 2) {
+        const downIndex = NODES[row + 1][col];
+        if (areNodesConnectedInDirection(node.Index, downIndex, 2)) {
+          jumpNodes[2] = true;
+        }
+      }
+
+      // Check Left (3)
+      if (col >= 1) {
+        const leftIndex = NODES[row][col - 1];
+        if (areNodesConnectedInDirection(node.Index, leftIndex, 3)) {
+          jumpNodes[3] = true;
+        }
+      }
+
+      node.JumpNodes = jumpNodes;
+    });
+
+    newData.SubNodes = subNodes;
+    return newData;
+  };
+
+  const generateSubNodeForNewPath = (newData: Level) => {
+    if (
+      !newData.NewPaths?.length ||
+      !newData.NewPaths ||
+      !newData.NewPaths[0] ||
+      !newData.NewPaths[0].NodesToUnlock
+    )
+      return newData;
+    const subNodes = [...(newData.NewPaths[0].NodesToUnlock || [])];
+
+    // Helper function to find node position
+    const findNodePosition = (nodeIndex: number) => {
+      let row = -1,
+        col = -1;
+      NODES.forEach((r, i) => {
+        const c = r.indexOf(nodeIndex);
+        if (c > -1) {
+          row = i;
+          col = c;
+        }
+      });
+      return { row, col };
+    };
+
+    // Helper function to check if nodes are connected in a direction
+    const areNodesConnectedInDirection = (
+      node1Index: number,
+      node2Index: number,
+      direction: number
+    ) => {
+      const node1 = subNodes.find((n) => n.Index === node1Index);
+      const node2 = subNodes.find((n) => n.Index === node2Index);
+
+      if (!node1 || !node2) return false;
+
+      // Check if either node points to the other in the specified direction
+      if (direction === 0) {
+        // Up
+        return node1.Paths.includes(0) || node2.Paths.includes(2);
+      } else if (direction === 1) {
+        // Right
+        return node1.Paths.includes(1) || node2.Paths.includes(3);
+      } else if (direction === 2) {
+        // Down
+        return node1.Paths.includes(2) || node2.Paths.includes(0);
+      } else if (direction === 3) {
+        // Left
+        return node1.Paths.includes(3) || node2.Paths.includes(1);
+      }
+      return false;
+    };
+
+    subNodes.forEach((node) => {
+      const { row, col } = findNodePosition(node.Index);
+      const jumpNodes = [false, false, false, false];
+
+      // Check Up (0)
+      if (row >= 1) {
+        const upIndex = NODES[row - 1][col];
+        if (areNodesConnectedInDirection(node.Index, upIndex, 0)) {
+          jumpNodes[0] = true;
+        }
+      }
+
+      // Check Right (1)
+      if (col <= NODES[0].length - 2) {
+        const rightIndex = NODES[row][col + 1];
+        if (areNodesConnectedInDirection(node.Index, rightIndex, 1)) {
+          jumpNodes[1] = true;
+        }
+      }
+
+      // Check Down (2)
+      if (row <= NODES.length - 2) {
+        const downIndex = NODES[row + 1][col];
+        if (areNodesConnectedInDirection(node.Index, downIndex, 2)) {
+          jumpNodes[2] = true;
+        }
+      }
+
+      // Check Left (3)
+      if (col >= 1) {
+        const leftIndex = NODES[row][col - 1];
+        if (areNodesConnectedInDirection(node.Index, leftIndex, 3)) {
+          jumpNodes[3] = true;
+        }
+      }
+
+      node.JumpNodes = jumpNodes;
+    });
+
+    newData.NewPaths[0].NodesToUnlock = subNodes;
+    return newData;
+  };
   const generateJumpNodes = () => {
     if (!levelData) return;
     const confirmSave = window.confirm("Save level?");
     if (!confirmSave) return;
-    setLevelData((prevData) => {
-      if (!prevData) return prevData;
 
-      const newData = { ...prevData };
-      const subNodes = [...(newData.SubNodes || [])];
-
-      // Helper function to find node position
-      const findNodePosition = (nodeIndex: number) => {
-        let row = -1,
-          col = -1;
-        NODES.forEach((r, i) => {
-          const c = r.indexOf(nodeIndex);
-          if (c > -1) {
-            row = i;
-            col = c;
-          }
-        });
-        return { row, col };
-      };
-
-      // Helper function to check if nodes are connected in a direction
-      const areNodesConnectedInDirection = (
-        node1Index: number,
-        node2Index: number,
-        direction: number
-      ) => {
-        const node1 = subNodes.find((n) => n.Index === node1Index);
-        const node2 = subNodes.find((n) => n.Index === node2Index);
-
-        if (!node1 || !node2) return false;
-
-        // Check if either node points to the other in the specified direction
-        if (direction === 0) {
-          // Up
-          return node1.Paths.includes(0) || node2.Paths.includes(2);
-        } else if (direction === 1) {
-          // Right
-          return node1.Paths.includes(1) || node2.Paths.includes(3);
-        } else if (direction === 2) {
-          // Down
-          return node1.Paths.includes(2) || node2.Paths.includes(0);
-        } else if (direction === 3) {
-          // Left
-          return node1.Paths.includes(3) || node2.Paths.includes(1);
-        }
-        return false;
-      };
-
-      subNodes.forEach((node) => {
-        const { row, col } = findNodePosition(node.Index);
-        const jumpNodes = [false, false, false, false];
-
-        // Check Up (0)
-        if (row >= 1) {
-          const upIndex = NODES[row - 1][col];
-          if (areNodesConnectedInDirection(node.Index, upIndex, 0)) {
-            jumpNodes[0] = true;
-          }
-        }
-
-        // Check Right (1)
-        if (col <= NODES[0].length - 2) {
-          const rightIndex = NODES[row][col + 1];
-          if (areNodesConnectedInDirection(node.Index, rightIndex, 1)) {
-            jumpNodes[1] = true;
-          }
-        }
-
-        // Check Down (2)
-        if (row <= NODES.length - 2) {
-          const downIndex = NODES[row + 1][col];
-          if (areNodesConnectedInDirection(node.Index, downIndex, 2)) {
-            jumpNodes[2] = true;
-          }
-        }
-
-        // Check Left (3)
-        if (col >= 1) {
-          const leftIndex = NODES[row][col - 1];
-          if (areNodesConnectedInDirection(node.Index, leftIndex, 3)) {
-            jumpNodes[3] = true;
-          }
-        }
-
-        node.JumpNodes = jumpNodes;
-      });
-
-      newData.SubNodes = subNodes;
-      saveLevel(newData);
-      return newData;
-    });
+    let newData = { ...levelData };
+    newData = generateJumpNodesForMainPath(newData);
+    newData = generateSubNodeForNewPath(newData);
+    saveLevel(newData);
   };
 
   // For creating SubNodes
@@ -729,11 +840,93 @@ const LevelConfiguration: React.FC = () => {
     });
   };
 
-  console.log(levelData);
+  const handleAddTrapObject = (blockIndex: number, direction: number) => {
+    setLevelData((prevData) => {
+      if (!prevData) return prevData;
+      const newData = { ...prevData };
+
+      // Only allow one trap to be added
+      if (newData.Traps.length > 0) {
+        alert("A trap object already exists. Only one trap is allowed.");
+        return newData;
+      }
+
+      // Add a new trap object
+      newData.Traps.push({
+        TrapObject: {
+          Tag: "Turret",
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: direction, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        },
+        TrapTrigger: {} as TrapTrigger,
+        TrapType: "Turret",
+        CamPan: false,
+      });
+
+      return newData;
+    });
+  };
+
+  const handleAddTrapTrigger = (blockIndex: number, direction: number) => {
+    setLevelData((prevData) => {
+      if (!prevData) return prevData;
+      const newData = { ...prevData };
+      if (!newData.Traps.length) {
+        alert("No trap object found, add trap first");
+        return newData;
+      }
+
+      // Add a trigger to the existing trap
+      newData.Traps[0].TrapTrigger = {
+        Tag: "TurretTrigger",
+        NodeIndex: blockIndex,
+        CustomTransform: {
+          position: { x: 0, y: 0, z: 0 },
+          eulerAngles: { x: 0, y: direction, z: 0 },
+          localScale: { x: 0, y: 0, z: 0 },
+        },
+      };
+
+      return newData;
+    });
+    setIsAddingTrap(false);
+  };
+
+  const onAddTrap = () => {
+    if (!isAddingTrap) {
+      setIsAddingTrap(true);
+    } else {
+      if (!levelData?.Traps.length) {
+        setIsAddingTrap(false);
+        return;
+      }
+      const incompleteTrap = levelData.Traps.find(
+        (trap) => !trap.TrapObject || !trap.TrapTrigger
+      );
+      if (!incompleteTrap) {
+        setIsAddingTrap(false);
+        return;
+      }
+      alert("Complete adding trap");
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold mb-4">Level Generator</h1>
+        <button
+          className={`px-4 py-2 text-white rounded ${
+            isAddingTrap ? "bg-red-800" : "bg-blue-600"
+          }`}
+          onClick={onAddTrap}
+        >
+          Add Trap
+        </button>
         <button
           className="px-4 py-2 bg-red-800 text-white rounded"
           onClick={handleReset}
@@ -743,6 +936,9 @@ const LevelConfiguration: React.FC = () => {
       </div>
       {levelData && (
         <Grid
+          isAddingTrap={isAddingTrap}
+          onAddTrapObject={handleAddTrapObject}
+          onAddTrapTrigger={handleAddTrapTrigger}
           onAddEnemy={handleAddEnemy}
           onAddPath={handleAddPath}
           onNormalClick={handleNormalClick}
