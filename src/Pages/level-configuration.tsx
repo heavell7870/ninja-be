@@ -8,6 +8,19 @@ import { useData } from "../hooks/data";
 import { useParams } from "react-router";
 import { aabr, NODES, resetLevelData } from "../constants";
 
+const findNodePosition = (nodeIndex: number) => {
+  let row = -1,
+    col = -1;
+  NODES.forEach((r, i) => {
+    const c = r.indexOf(nodeIndex);
+    if (c > -1) {
+      row = i;
+      col = c;
+    }
+  });
+  return { row, col };
+};
+
 const keyInstructions = [
   { key: "x", action: "Add Path" },
   { key: "s", action: "Select Start" },
@@ -176,51 +189,59 @@ const LevelConfiguration: React.FC = () => {
 
     // Helper function to get neighbour nodes
     const getNeighbourNodes = (nodeIndex: number) => {
-      let row = -1,
-        col = -1;
-      NODES.forEach((r, i) => {
-        const c = r.indexOf(nodeIndex);
-        if (c > -1) {
-          row = i;
-          col = c;
-        }
-      });
+      const { row, col } = findNodePosition(nodeIndex);
 
-      const neighbourNodes = [false, false, false, false];
+      const neighbourNodes = [];
 
       // Up
       if (row >= 1) {
-        const upIndex = NODES[row - 1][col];
+        const upIndex = NODES[row - 1]?.[col];
         const upExists = subNodes.some((n) => n.Index === upIndex);
-        if (upExists && !areNodesConnected(nodeIndex, upIndex)) {
-          neighbourNodes[0] = true;
+        if (upIndex) {
+          if (upExists && areNodesConnected(nodeIndex, upIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
       // Right
       if (col <= NODES[0].length - 2) {
-        const rightIndex = NODES[row][col + 1];
+        const rightIndex = NODES[row]?.[col + 1];
         const rightExists = subNodes.some((n) => n.Index === rightIndex);
-        if (rightExists && !areNodesConnected(nodeIndex, rightIndex)) {
-          neighbourNodes[1] = true;
+        if (rightIndex) {
+          if (rightExists && areNodesConnected(nodeIndex, rightIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
       // Down
       if (row <= NODES.length - 2) {
-        const downIndex = NODES[row + 1][col];
+        const downIndex = NODES[row + 1]?.[col];
         const downExists = subNodes.some((n) => n.Index === downIndex);
-        if (downExists && !areNodesConnected(nodeIndex, downIndex)) {
-          neighbourNodes[2] = true;
+        if (downIndex) {
+          if (downExists && areNodesConnected(nodeIndex, downIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
       // Left
       if (col >= 1) {
-        const leftIndex = NODES[row][col - 1];
+        const leftIndex = NODES[row]?.[col - 1];
         const leftExists = subNodes.some((n) => n.Index === leftIndex);
-        if (leftExists && !areNodesConnected(nodeIndex, leftIndex)) {
-          neighbourNodes[3] = true;
+        if (leftIndex) {
+          if (leftExists && areNodesConnected(nodeIndex, leftIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
@@ -289,51 +310,59 @@ const LevelConfiguration: React.FC = () => {
 
     // Helper function to get neighbour nodes
     const getNeighbourNodes = (nodeIndex: number) => {
-      let row = -1,
-        col = -1;
-      NODES.forEach((r, i) => {
-        const c = r.indexOf(nodeIndex);
-        if (c > -1) {
-          row = i;
-          col = c;
-        }
-      });
+      const { row, col } = findNodePosition(nodeIndex);
 
-      const neighbourNodes = [false, false, false, false];
+      const neighbourNodes = [];
 
       // Up
       if (row >= 1) {
-        const upIndex = NODES[row - 1][col];
-        const upExists = subNodes.some((n) => n.Index === upIndex);
-        if (upExists && !areNodesConnected(nodeIndex, upIndex)) {
-          neighbourNodes[0] = true;
+        const upIndex = NODES[row - 1]?.[col];
+        if (upIndex) {
+          const upExists = subNodes.some((n) => n.Index === upIndex);
+          if (upExists && areNodesConnected(nodeIndex, upIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
       // Right
       if (col <= NODES[0].length - 2) {
-        const rightIndex = NODES[row][col + 1];
-        const rightExists = subNodes.some((n) => n.Index === rightIndex);
-        if (rightExists && !areNodesConnected(nodeIndex, rightIndex)) {
-          neighbourNodes[1] = true;
+        const rightIndex = NODES[row]?.[col + 1];
+        if (rightIndex) {
+          const rightExists = subNodes.some((n) => n.Index === rightIndex);
+          if (rightExists && areNodesConnected(nodeIndex, rightIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
       // Down
       if (row <= NODES.length - 2) {
-        const downIndex = NODES[row + 1][col];
+        const downIndex = NODES[row + 1]?.[col];
         const downExists = subNodes.some((n) => n.Index === downIndex);
-        if (downExists && !areNodesConnected(nodeIndex, downIndex)) {
-          neighbourNodes[2] = true;
+        if (downIndex) {
+          if (downExists && areNodesConnected(nodeIndex, downIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
       // Left
       if (col >= 1) {
-        const leftIndex = NODES[row][col - 1];
+        const leftIndex = NODES[row]?.[col - 1];
         const leftExists = subNodes.some((n) => n.Index === leftIndex);
-        if (leftExists && !areNodesConnected(nodeIndex, leftIndex)) {
-          neighbourNodes[3] = true;
+        if (leftIndex) {
+          if (leftExists && areNodesConnected(nodeIndex, leftIndex)) {
+            neighbourNodes.push(false);
+          } else {
+            neighbourNodes.push(true);
+          }
         }
       }
 
@@ -353,18 +382,6 @@ const LevelConfiguration: React.FC = () => {
     const subNodes = [...(newData.SubNodes || [])];
 
     // Helper function to find node position
-    const findNodePosition = (nodeIndex: number) => {
-      let row = -1,
-        col = -1;
-      NODES.forEach((r, i) => {
-        const c = r.indexOf(nodeIndex);
-        if (c > -1) {
-          row = i;
-          col = c;
-        }
-      });
-      return { row, col };
-    };
 
     // Helper function to check if nodes are connected in a direction
     const areNodesConnectedInDirection = (
@@ -396,40 +413,56 @@ const LevelConfiguration: React.FC = () => {
 
     subNodes.forEach((node) => {
       const { row, col } = findNodePosition(node.Index);
-      const jumpNodes = [false, false, false, false];
+      const jumpNodes = [];
 
       // Check Up (0)
       if (row >= 1) {
-        const upIndex = NODES[row - 1][col];
-        if (areNodesConnectedInDirection(node.Index, upIndex, 0)) {
-          jumpNodes[0] = true;
+        const twoUpIndex = NODES[row - 2]?.[col];
+        if (twoUpIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoUpIndex, 0)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 
       // Check Right (1)
       if (col <= NODES[0].length - 2) {
-        const rightIndex = NODES[row][col + 1];
-        if (areNodesConnectedInDirection(node.Index, rightIndex, 1)) {
-          jumpNodes[1] = true;
+        const twoRightIndex = NODES[row]?.[col + 2];
+        if (twoRightIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoRightIndex, 1)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 
       // Check Down (2)
       if (row <= NODES.length - 2) {
-        const downIndex = NODES[row + 1][col];
-        if (areNodesConnectedInDirection(node.Index, downIndex, 2)) {
-          jumpNodes[2] = true;
+        const twoDownIndex = NODES[row + 2]?.[col];
+        if (twoDownIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoDownIndex, 2)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 
       // Check Left (3)
       if (col >= 1) {
-        const leftIndex = NODES[row][col - 1];
-        if (areNodesConnectedInDirection(node.Index, leftIndex, 3)) {
-          jumpNodes[3] = true;
+        const twoLeftIndex = NODES[row]?.[col - 2];
+        if (twoLeftIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoLeftIndex, 3)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
-
+      console.log("jumpNodes", jumpNodes);
       node.JumpNodes = jumpNodes;
     });
 
@@ -447,20 +480,6 @@ const LevelConfiguration: React.FC = () => {
       return newData;
     const subNodes = [...(newData.NewPaths[0].NodesToUnlock || [])];
 
-    // Helper function to find node position
-    const findNodePosition = (nodeIndex: number) => {
-      let row = -1,
-        col = -1;
-      NODES.forEach((r, i) => {
-        const c = r.indexOf(nodeIndex);
-        if (c > -1) {
-          row = i;
-          col = c;
-        }
-      });
-      return { row, col };
-    };
-
     // Helper function to check if nodes are connected in a direction
     const areNodesConnectedInDirection = (
       node1Index: number,
@@ -491,37 +510,53 @@ const LevelConfiguration: React.FC = () => {
 
     subNodes.forEach((node) => {
       const { row, col } = findNodePosition(node.Index);
-      const jumpNodes = [false, false, false, false];
+      const jumpNodes = [];
 
       // Check Up (0)
       if (row >= 1) {
-        const upIndex = NODES[row - 1][col];
-        if (areNodesConnectedInDirection(node.Index, upIndex, 0)) {
-          jumpNodes[0] = true;
+        const twoUpIndex = NODES[row - 2]?.[col];
+        if (twoUpIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoUpIndex, 0)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 
       // Check Right (1)
       if (col <= NODES[0].length - 2) {
-        const rightIndex = NODES[row][col + 1];
-        if (areNodesConnectedInDirection(node.Index, rightIndex, 1)) {
-          jumpNodes[1] = true;
+        const twoRightIndex = NODES[row]?.[col + 2];
+        if (twoRightIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoRightIndex, 1)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 
       // Check Down (2)
       if (row <= NODES.length - 2) {
-        const downIndex = NODES[row + 1][col];
-        if (areNodesConnectedInDirection(node.Index, downIndex, 2)) {
-          jumpNodes[2] = true;
+        const twoDownIndex = NODES[row + 2]?.[col];
+        if (twoDownIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoDownIndex, 2)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 
       // Check Left (3)
       if (col >= 1) {
-        const leftIndex = NODES[row][col - 1];
-        if (areNodesConnectedInDirection(node.Index, leftIndex, 3)) {
-          jumpNodes[3] = true;
+        const twoLeftIndex = NODES[row]?.[col - 2];
+        if (twoLeftIndex) {
+          if (areNodesConnectedInDirection(node.Index, twoLeftIndex, 3)) {
+            jumpNodes.push(true);
+          } else {
+            jumpNodes.push(false);
+          }
         }
       }
 

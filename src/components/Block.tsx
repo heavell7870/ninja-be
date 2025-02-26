@@ -41,7 +41,7 @@ function DirectionBox({
   return (
     <div
       className={`absolute w-6 h-6 text-xs text-white ${
-        type === "newPath" ? "bg-yellow-500" : "bg-red-500"
+        type === "newPath" ? "bg-yellow-500" : "bg-white"
       } z-[1] ${
         direction === 0
           ? "top-[-12px]"
