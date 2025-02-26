@@ -130,10 +130,10 @@ export function resetLevelData(levelTag: string) {
 }
 
 export const EULER_ANGLES_Y = {
-  right: 90,
-  left: -90,
-  top: -180,
-  bottom: 180,
+  right: 180,
+  left: 0,
+  top: 90,
+  bottom: -90,
 };
 
 export const aabr = {

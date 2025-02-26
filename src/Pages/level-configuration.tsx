@@ -27,7 +27,10 @@ const LevelConfiguration: React.FC = () => {
   const { data, setData } = useData();
   const { region, level } = useParams();
   const [levelData, setLevelData] = useState<Level>();
-  const [isAddingTrap, setIsAddingTrap] = useState(false);
+  const [isAddingTrap, setIsAddingTrap] = useState<{
+    type: "Wall" | "Turret";
+    index: number;
+  } | null>(null);
 
   useEffect(() => {
     if (data && !levelData) {
@@ -123,6 +126,227 @@ const LevelConfiguration: React.FC = () => {
       }
       return updatedData;
     });
+  };
+
+  const generateNeighbourNodesForMainPath = (newData: Level) => {
+    if (!newData) return newData;
+
+    const subNodes = [...(newData.SubNodes || [])];
+
+    // Helper function to check if two nodes are connected by paths
+    const areNodesConnected = (node1Index: number, node2Index: number) => {
+      const node1 = subNodes.find((n) => n.Index === node1Index);
+      const node2 = subNodes.find((n) => n.Index === node2Index);
+      if (!node1 || !node2) return false;
+
+      // Find positions
+      let node1Row = -1,
+        node1Col = -1,
+        node2Row = -1,
+        node2Col = -1;
+      NODES.forEach((row, i) => {
+        const index1 = row.indexOf(node1Index);
+        const index2 = row.indexOf(node2Index);
+        if (index1 > -1) {
+          node1Row = i;
+          node1Col = index1;
+        }
+        if (index2 > -1) {
+          node2Row = i;
+          node2Col = index2;
+        }
+      });
+
+      // Determine required paths based on relative position
+      if (node2Row === node1Row - 1) {
+        // node2 is above node1
+        return node1.Paths.includes(0) || node2.Paths.includes(2);
+      } else if (node2Col === node1Col + 1) {
+        // node2 is right of node1
+        return node1.Paths.includes(1) || node2.Paths.includes(3);
+      } else if (node2Row === node1Row + 1) {
+        // node2 is below node1
+        return node1.Paths.includes(2) || node2.Paths.includes(0);
+      } else if (node2Col === node1Col - 1) {
+        // node2 is left of node1
+        return node1.Paths.includes(3) || node2.Paths.includes(1);
+      }
+      return false;
+    };
+
+    // Helper function to get neighbour nodes
+    const getNeighbourNodes = (nodeIndex: number) => {
+      let row = -1,
+        col = -1;
+      NODES.forEach((r, i) => {
+        const c = r.indexOf(nodeIndex);
+        if (c > -1) {
+          row = i;
+          col = c;
+        }
+      });
+
+      const neighbourNodes = [false, false, false, false];
+
+      // Up
+      if (row >= 1) {
+        const upIndex = NODES[row - 1][col];
+        const upExists = subNodes.some((n) => n.Index === upIndex);
+        if (upExists && !areNodesConnected(nodeIndex, upIndex)) {
+          neighbourNodes[0] = true;
+        }
+      }
+
+      // Right
+      if (col <= NODES[0].length - 2) {
+        const rightIndex = NODES[row][col + 1];
+        const rightExists = subNodes.some((n) => n.Index === rightIndex);
+        if (rightExists && !areNodesConnected(nodeIndex, rightIndex)) {
+          neighbourNodes[1] = true;
+        }
+      }
+
+      // Down
+      if (row <= NODES.length - 2) {
+        const downIndex = NODES[row + 1][col];
+        const downExists = subNodes.some((n) => n.Index === downIndex);
+        if (downExists && !areNodesConnected(nodeIndex, downIndex)) {
+          neighbourNodes[2] = true;
+        }
+      }
+
+      // Left
+      if (col >= 1) {
+        const leftIndex = NODES[row][col - 1];
+        const leftExists = subNodes.some((n) => n.Index === leftIndex);
+        if (leftExists && !areNodesConnected(nodeIndex, leftIndex)) {
+          neighbourNodes[3] = true;
+        }
+      }
+
+      return neighbourNodes;
+    };
+
+    // Update all nodes' NeighbourNodes
+    subNodes.forEach((node) => {
+      node.NeighbourNodes = getNeighbourNodes(node.Index);
+    });
+
+    newData.SubNodes = subNodes;
+    return newData;
+  };
+
+  const generateNeighbourNodesForNewPath = (newData: Level) => {
+    if (
+      !newData.NewPaths?.length ||
+      !newData.NewPaths ||
+      !newData.NewPaths[0] ||
+      !newData.NewPaths[0].NodesToUnlock
+    )
+      return newData;
+    const subNodes = [...(newData.NewPaths[0]?.NodesToUnlock || [])];
+
+    // Helper function to check if two nodes are connected by paths
+    const areNodesConnected = (node1Index: number, node2Index: number) => {
+      const node1 = subNodes.find((n) => n.Index === node1Index);
+      const node2 = subNodes.find((n) => n.Index === node2Index);
+      if (!node1 || !node2) return false;
+
+      // Find positions
+      let node1Row = -1,
+        node1Col = -1,
+        node2Row = -1,
+        node2Col = -1;
+      NODES.forEach((row, i) => {
+        const index1 = row.indexOf(node1Index);
+        const index2 = row.indexOf(node2Index);
+        if (index1 > -1) {
+          node1Row = i;
+          node1Col = index1;
+        }
+        if (index2 > -1) {
+          node2Row = i;
+          node2Col = index2;
+        }
+      });
+
+      // Determine required paths based on relative position
+      if (node2Row === node1Row - 1) {
+        // node2 is above node1
+        return node1.Paths.includes(0) || node2.Paths.includes(2);
+      } else if (node2Col === node1Col + 1) {
+        // node2 is right of node1
+        return node1.Paths.includes(1) || node2.Paths.includes(3);
+      } else if (node2Row === node1Row + 1) {
+        // node2 is below node1
+        return node1.Paths.includes(2) || node2.Paths.includes(0);
+      } else if (node2Col === node1Col - 1) {
+        // node2 is left of node1
+        return node1.Paths.includes(3) || node2.Paths.includes(1);
+      }
+      return false;
+    };
+
+    // Helper function to get neighbour nodes
+    const getNeighbourNodes = (nodeIndex: number) => {
+      let row = -1,
+        col = -1;
+      NODES.forEach((r, i) => {
+        const c = r.indexOf(nodeIndex);
+        if (c > -1) {
+          row = i;
+          col = c;
+        }
+      });
+
+      const neighbourNodes = [false, false, false, false];
+
+      // Up
+      if (row >= 1) {
+        const upIndex = NODES[row - 1][col];
+        const upExists = subNodes.some((n) => n.Index === upIndex);
+        if (upExists && !areNodesConnected(nodeIndex, upIndex)) {
+          neighbourNodes[0] = true;
+        }
+      }
+
+      // Right
+      if (col <= NODES[0].length - 2) {
+        const rightIndex = NODES[row][col + 1];
+        const rightExists = subNodes.some((n) => n.Index === rightIndex);
+        if (rightExists && !areNodesConnected(nodeIndex, rightIndex)) {
+          neighbourNodes[1] = true;
+        }
+      }
+
+      // Down
+      if (row <= NODES.length - 2) {
+        const downIndex = NODES[row + 1][col];
+        const downExists = subNodes.some((n) => n.Index === downIndex);
+        if (downExists && !areNodesConnected(nodeIndex, downIndex)) {
+          neighbourNodes[2] = true;
+        }
+      }
+
+      // Left
+      if (col >= 1) {
+        const leftIndex = NODES[row][col - 1];
+        const leftExists = subNodes.some((n) => n.Index === leftIndex);
+        if (leftExists && !areNodesConnected(nodeIndex, leftIndex)) {
+          neighbourNodes[3] = true;
+        }
+      }
+
+      return neighbourNodes;
+    };
+
+    // Update all nodes' NeighbourNodes
+    subNodes.forEach((node) => {
+      node.NeighbourNodes = getNeighbourNodes(node.Index);
+    });
+
+    newData.NewPaths[0].NodesToUnlock = subNodes;
+    return newData;
   };
 
   const generateJumpNodesForMainPath = (newData: Level) => {
@@ -314,7 +538,9 @@ const LevelConfiguration: React.FC = () => {
 
     let newData = { ...levelData };
     newData = generateJumpNodesForMainPath(newData);
+    newData = generateNeighbourNodesForMainPath(newData);
     newData = generateSubNodeForNewPath(newData);
+    newData = generateNeighbourNodesForNewPath(newData);
     saveLevel(newData);
   };
 
@@ -334,100 +560,7 @@ const LevelConfiguration: React.FC = () => {
       const newData = { ...prevData };
       const subNodes = [...(newData.SubNodes || [])];
       const jumpNodes = [false, false, false, false];
-
-      // Helper function to check if two nodes are connected by paths
-      const areNodesConnected = (node1Index: number, node2Index: number) => {
-        const node1 = subNodes.find((n) => n.Index === node1Index);
-        const node2 = subNodes.find((n) => n.Index === node2Index);
-        if (!node1 || !node2) return false;
-
-        // Find positions
-        let node1Row = -1,
-          node1Col = -1,
-          node2Row = -1,
-          node2Col = -1;
-        NODES.forEach((row, i) => {
-          const index1 = row.indexOf(node1Index);
-          const index2 = row.indexOf(node2Index);
-          if (index1 > -1) {
-            node1Row = i;
-            node1Col = index1;
-          }
-          if (index2 > -1) {
-            node2Row = i;
-            node2Col = index2;
-          }
-        });
-
-        // Determine required paths based on relative position
-        if (node2Row === node1Row - 1) {
-          // node2 is above node1
-          return node1.Paths.includes(0) || node2.Paths.includes(2);
-        } else if (node2Col === node1Col + 1) {
-          // node2 is right of node1
-          return node1.Paths.includes(1) || node2.Paths.includes(3);
-        } else if (node2Row === node1Row + 1) {
-          // node2 is below node1
-          return node1.Paths.includes(2) || node2.Paths.includes(0);
-        } else if (node2Col === node1Col - 1) {
-          // node2 is left of node1
-          return node1.Paths.includes(3) || node2.Paths.includes(1);
-        }
-        return false;
-      };
-
-      // Helper function to get neighbour nodes
-      const getNeighbourNodes = (nodeIndex: number) => {
-        let row = -1,
-          col = -1;
-        NODES.forEach((r, i) => {
-          const c = r.indexOf(nodeIndex);
-          if (c > -1) {
-            row = i;
-            col = c;
-          }
-        });
-
-        const neighbourNodes = [false, false, false, false];
-
-        // Up
-        if (row >= 1) {
-          const upIndex = NODES[row - 1][col];
-          const upExists = subNodes.some((n) => n.Index === upIndex);
-          if (upExists && !areNodesConnected(nodeIndex, upIndex)) {
-            neighbourNodes[0] = true;
-          }
-        }
-
-        // Right
-        if (col <= NODES[0].length - 2) {
-          const rightIndex = NODES[row][col + 1];
-          const rightExists = subNodes.some((n) => n.Index === rightIndex);
-          if (rightExists && !areNodesConnected(nodeIndex, rightIndex)) {
-            neighbourNodes[1] = true;
-          }
-        }
-
-        // Down
-        if (row <= NODES.length - 2) {
-          const downIndex = NODES[row + 1][col];
-          const downExists = subNodes.some((n) => n.Index === downIndex);
-          if (downExists && !areNodesConnected(nodeIndex, downIndex)) {
-            neighbourNodes[2] = true;
-          }
-        }
-
-        // Left
-        if (col >= 1) {
-          const leftIndex = NODES[row][col - 1];
-          const leftExists = subNodes.some((n) => n.Index === leftIndex);
-          if (leftExists && !areNodesConnected(nodeIndex, leftIndex)) {
-            neighbourNodes[3] = true;
-          }
-        }
-
-        return neighbourNodes;
-      };
+      const neighbourNodes = [false, false, false, false];
 
       // If no previous index, just create a new node
       if (!prevBlockIndex) {
@@ -439,8 +572,8 @@ const LevelConfiguration: React.FC = () => {
           subNodes.push({
             Index: currentBlockIndex,
             Paths: [],
-            NeighbourNodes: getNeighbourNodes(currentBlockIndex),
             JumpNodes: jumpNodes,
+            NeighbourNodes: neighbourNodes,
           });
         }
 
@@ -487,14 +620,13 @@ const LevelConfiguration: React.FC = () => {
       if (prevNode) {
         if (!prevNode.Paths.includes(pathDirection)) {
           prevNode.Paths.push(pathDirection);
-          prevNode.NeighbourNodes = getNeighbourNodes(prevBlockIndex);
         }
       } else {
         subNodes.push({
           Index: prevBlockIndex,
           Paths: [pathDirection],
-          NeighbourNodes: getNeighbourNodes(prevBlockIndex),
           JumpNodes: jumpNodes,
+          NeighbourNodes: neighbourNodes,
         });
       }
 
@@ -502,25 +634,14 @@ const LevelConfiguration: React.FC = () => {
         subNodes.push({
           Index: currentBlockIndex,
           Paths: [],
-          NeighbourNodes: getNeighbourNodes(currentBlockIndex),
           JumpNodes: jumpNodes,
+          NeighbourNodes: neighbourNodes,
         });
-      } else {
-        currNode.NeighbourNodes = getNeighbourNodes(currentBlockIndex);
       }
-
-      // Update all nodes' NeighbourNodes as they might be affected
-      subNodes.forEach((node) => {
-        node.NeighbourNodes = getNeighbourNodes(node.Index);
-      });
 
       newData.SubNodes = subNodes;
       return newData;
     });
-  };
-
-  const handleNormalClick = (blockIndex: number) => {
-    console.log(blockIndex);
   };
 
   const handleReset = () => {
@@ -603,9 +724,8 @@ const LevelConfiguration: React.FC = () => {
       return newData;
     });
   };
-
   const handleAddNewPathIndexA = (index: number) => {
-    const exists = levelData?.NewPaths[0].IndexA;
+    const exists = levelData?.NewPaths?.[0]?.IndexA;
     if (exists) {
       const confirm = window.confirm(
         "A path already exists, click ok to overwrite"
@@ -614,30 +734,59 @@ const LevelConfiguration: React.FC = () => {
         setLevelData((prevData) => {
           if (!prevData) return prevData;
           const newData = { ...prevData };
-          newData.NewPaths[0].IndexA = index;
-          newData.NewPaths[0].JointA = index;
+          if (!newData.NewPaths || !newData.NewPaths[0]) {
+            newData.NewPaths = [
+              {
+                IndexA: index,
+                IndexB: index,
+                JointA: index,
+                JointB: index,
+                NodesToUnlock: [],
+              },
+            ];
+          } else {
+            newData.NewPaths[0].IndexA = index;
+            newData.NewPaths[0].JointA = index;
+          }
           return newData;
         });
       }
+    } else {
+      setLevelData((prevData) => {
+        if (!prevData) return prevData;
+        const newData = { ...prevData };
+        if (!newData.NewPaths || !newData.NewPaths[0]) {
+          newData.NewPaths = [
+            {
+              IndexA: index,
+              IndexB: index,
+              JointA: index,
+              JointB: index,
+              NodesToUnlock: [],
+            },
+          ];
+        } else {
+          newData.NewPaths[0].IndexA = index;
+          newData.NewPaths[0].JointA = index;
+        }
+        return newData;
+      });
     }
   };
 
   const handleAddNewPathIndexB = (index: number) => {
-    const exists = levelData?.NewPaths[0].IndexB;
-    if (exists) {
-      const confirm = window.confirm(
-        "A path already exists, click ok to overwrite"
-      );
-      if (confirm) {
-        setLevelData((prevData) => {
-          if (!prevData) return prevData;
-          const newData = { ...prevData };
-          newData.NewPaths[0].IndexB = index;
-          newData.NewPaths[0].JointB = index;
-          return newData;
-        });
-      }
+    const exists = levelData?.NewPaths[0]?.IndexB;
+    if (!exists) {
+      alert("No index a found, add index a first");
+      return;
     }
+    setLevelData((prevData) => {
+      if (!prevData) return prevData;
+      const newData = { ...prevData };
+      newData.NewPaths[0].IndexB = index;
+      newData.NewPaths[0].JointB = index;
+      return newData;
+    });
   };
 
   const handleAddNewPath = (
@@ -645,7 +794,7 @@ const LevelConfiguration: React.FC = () => {
     prevBlockIndex?: number
   ) => {
     if (!levelData) return;
-
+    console.log("currentBlockIndex", currentBlockIndex, prevBlockIndex);
     setLevelData((prevData) => {
       if (!prevData) {
         console.log("No previous data");
@@ -653,102 +802,23 @@ const LevelConfiguration: React.FC = () => {
       }
 
       const newData = { ...prevData };
+
+      // Ensure NewPaths[0] exists
+      if (!newData.NewPaths || !newData.NewPaths[0]) {
+        newData.NewPaths = [
+          {
+            IndexA: 0,
+            IndexB: 0,
+            JointA: 0,
+            JointB: 0,
+            NodesToUnlock: [],
+          },
+        ];
+      }
+
       const subNodes = [...(newData.NewPaths[0]?.NodesToUnlock || [])];
       const jumpNodes = [false, false, false, false];
-
-      // Helper function to check if two nodes are connected by paths
-      const areNodesConnected = (node1Index: number, node2Index: number) => {
-        const node1 = subNodes.find((n) => n.Index === node1Index);
-        const node2 = subNodes.find((n) => n.Index === node2Index);
-        if (!node1 || !node2) return false;
-
-        // Find positions
-        let node1Row = -1,
-          node1Col = -1,
-          node2Row = -1,
-          node2Col = -1;
-        NODES.forEach((row, i) => {
-          const index1 = row.indexOf(node1Index);
-          const index2 = row.indexOf(node2Index);
-          if (index1 > -1) {
-            node1Row = i;
-            node1Col = index1;
-          }
-          if (index2 > -1) {
-            node2Row = i;
-            node2Col = index2;
-          }
-        });
-
-        // Determine required paths based on relative position
-        if (node2Row === node1Row - 1) {
-          // node2 is above node1
-          return node1.Paths.includes(0) || node2.Paths.includes(2);
-        } else if (node2Col === node1Col + 1) {
-          // node2 is right of node1
-          return node1.Paths.includes(1) || node2.Paths.includes(3);
-        } else if (node2Row === node1Row + 1) {
-          // node2 is below node1
-          return node1.Paths.includes(2) || node2.Paths.includes(0);
-        } else if (node2Col === node1Col - 1) {
-          // node2 is left of node1
-          return node1.Paths.includes(3) || node2.Paths.includes(1);
-        }
-        return false;
-      };
-
-      // Helper function to get neighbour nodes
-      const getNeighbourNodes = (nodeIndex: number) => {
-        let row = -1,
-          col = -1;
-        NODES.forEach((r, i) => {
-          const c = r.indexOf(nodeIndex);
-          if (c > -1) {
-            row = i;
-            col = c;
-          }
-        });
-
-        const neighbourNodes = [false, false, false, false];
-
-        // Up
-        if (row >= 1) {
-          const upIndex = NODES[row - 1][col];
-          const upExists = subNodes.some((n) => n.Index === upIndex);
-          if (upExists && !areNodesConnected(nodeIndex, upIndex)) {
-            neighbourNodes[0] = true;
-          }
-        }
-
-        // Right
-        if (col <= NODES[0].length - 2) {
-          const rightIndex = NODES[row][col + 1];
-          const rightExists = subNodes.some((n) => n.Index === rightIndex);
-          if (rightExists && !areNodesConnected(nodeIndex, rightIndex)) {
-            neighbourNodes[1] = true;
-          }
-        }
-
-        // Down
-        if (row <= NODES.length - 2) {
-          const downIndex = NODES[row + 1][col];
-          const downExists = subNodes.some((n) => n.Index === downIndex);
-          if (downExists && !areNodesConnected(nodeIndex, downIndex)) {
-            neighbourNodes[2] = true;
-          }
-        }
-
-        // Left
-        if (col >= 1) {
-          const leftIndex = NODES[row][col - 1];
-          const leftExists = subNodes.some((n) => n.Index === leftIndex);
-          if (leftExists && !areNodesConnected(nodeIndex, leftIndex)) {
-            neighbourNodes[3] = true;
-          }
-        }
-
-        return neighbourNodes;
-      };
+      const neighbourNodes = [false, false, false, false];
 
       // If no previous index, just create a new node
       if (!prevBlockIndex) {
@@ -760,7 +830,7 @@ const LevelConfiguration: React.FC = () => {
           subNodes.push({
             Index: currentBlockIndex,
             Paths: [],
-            NeighbourNodes: getNeighbourNodes(currentBlockIndex),
+            NeighbourNodes: neighbourNodes,
             JumpNodes: jumpNodes,
           });
         }
@@ -769,11 +839,12 @@ const LevelConfiguration: React.FC = () => {
         return newData;
       }
 
-      // Find if previous node exists
-      const prevNode = subNodes.find((node) => node.Index === prevBlockIndex);
-      const currNode = subNodes.find(
-        (node) => node.Index === currentBlockIndex
-      );
+      // Find the last clicked node index
+      const lastClickedIndex = prevBlockIndex;
+
+      // Find or create nodes
+      let prevNode = subNodes.find((node) => node.Index === lastClickedIndex);
+      let currNode = subNodes.find((node) => node.Index === currentBlockIndex);
 
       // Get relative position to determine path direction
       let prevRow = -1,
@@ -781,7 +852,7 @@ const LevelConfiguration: React.FC = () => {
         currRow = -1,
         currCol = -1;
       NODES.forEach((row, i) => {
-        const pIndex = row.indexOf(prevBlockIndex);
+        const pIndex = row.indexOf(lastClickedIndex);
         const cIndex = row.indexOf(currentBlockIndex);
         if (pIndex > -1) {
           prevRow = i;
@@ -805,35 +876,41 @@ const LevelConfiguration: React.FC = () => {
         return prevData;
       }
 
-      if (prevNode) {
+      // Create previous node if it doesn't exist
+      if (!prevNode) {
+        prevNode = {
+          Index: lastClickedIndex,
+          Paths: [pathDirection],
+          NeighbourNodes: [...neighbourNodes],
+          JumpNodes: [...jumpNodes],
+        };
+        subNodes.push(prevNode);
+      } else {
+        // Add path to existing node if not already present
         if (!prevNode.Paths.includes(pathDirection)) {
           prevNode.Paths.push(pathDirection);
-          prevNode.NeighbourNodes = getNeighbourNodes(prevBlockIndex);
         }
-      } else {
-        subNodes.push({
-          Index: prevBlockIndex,
-          Paths: [pathDirection],
-          NeighbourNodes: getNeighbourNodes(prevBlockIndex),
-          JumpNodes: jumpNodes,
-        });
       }
 
+      // Create current node if it doesn't exist
       if (!currNode) {
-        subNodes.push({
-          Index: currentBlockIndex,
-          Paths: [],
-          NeighbourNodes: getNeighbourNodes(currentBlockIndex),
-          JumpNodes: jumpNodes,
-        });
-      } else {
-        currNode.NeighbourNodes = getNeighbourNodes(currentBlockIndex);
-      }
+        // Calculate opposite direction (0→2, 1→3, 2→0, 3→1)
+        const oppositeDirection = (pathDirection + 2) % 4;
 
-      // Update all nodes' NeighbourNodes as they might be affected
-      subNodes.forEach((node) => {
-        node.NeighbourNodes = getNeighbourNodes(node.Index);
-      });
+        currNode = {
+          Index: currentBlockIndex,
+          Paths: [oppositeDirection],
+          NeighbourNodes: [...neighbourNodes],
+          JumpNodes: [...jumpNodes],
+        };
+        subNodes.push(currNode);
+      } else {
+        // Add opposite path to current node
+        const oppositeDirection = (pathDirection + 2) % 4;
+        if (!currNode.Paths.includes(oppositeDirection)) {
+          currNode.Paths.push(oppositeDirection);
+        }
+      }
 
       newData.NewPaths[0].NodesToUnlock = subNodes;
       return newData;
@@ -845,16 +922,13 @@ const LevelConfiguration: React.FC = () => {
       if (!prevData) return prevData;
       const newData = { ...prevData };
 
-      // Only allow one trap to be added
-      if (newData.Traps.length > 0) {
-        alert("A trap object already exists. Only one trap is allowed.");
-        return newData;
-      }
+      // Allow multiple traps to be added
+      const trapIndex = isAddingTrap?.index ?? newData.Traps.length;
 
       // Add a new trap object
-      newData.Traps.push({
+      newData.Traps[trapIndex] = {
         TrapObject: {
-          Tag: "Turret",
+          Tag: isAddingTrap?.type === "Turret" ? "Turret" : "Wall",
           NodeIndex: blockIndex,
           CustomTransform: {
             position: { x: 0, y: 0, z: 0 },
@@ -863,9 +937,9 @@ const LevelConfiguration: React.FC = () => {
           },
         },
         TrapTrigger: {} as TrapTrigger,
-        TrapType: "Turret",
+        TrapType: isAddingTrap?.type === "Turret" ? "Turret" : "Wall",
         CamPan: false,
-      });
+      };
 
       return newData;
     });
@@ -880,106 +954,271 @@ const LevelConfiguration: React.FC = () => {
         return newData;
       }
 
-      // Add a trigger to the existing trap
-      newData.Traps[0].TrapTrigger = {
-        Tag: "TurretTrigger",
-        NodeIndex: blockIndex,
-        CustomTransform: {
-          position: { x: 0, y: 0, z: 0 },
-          eulerAngles: { x: 0, y: direction, z: 0 },
-          localScale: { x: 0, y: 0, z: 0 },
-        },
-      };
+      // Use index from isAddingTrap to set the data
+      const trapIndex = isAddingTrap?.index;
+      if (trapIndex !== undefined && newData.Traps[trapIndex]) {
+        newData.Traps[trapIndex].TrapTrigger = {
+          Tag:
+            isAddingTrap?.type === "Turret" ? "TurretTrigger" : "WallTrigger",
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: direction, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        };
+      }
 
       return newData;
     });
-    setIsAddingTrap(false);
   };
 
-  const onAddTrap = () => {
+  const onAddTrap = (type: "Wall" | "Turret") => {
     if (!isAddingTrap) {
-      setIsAddingTrap(true);
+      setIsAddingTrap({ type, index: levelData?.Traps.length || 0 });
     } else {
       if (!levelData?.Traps.length) {
-        setIsAddingTrap(false);
+        setIsAddingTrap(null);
         return;
       }
-      const incompleteTrap = levelData.Traps.find(
+      const incompleteTraps = levelData.Traps.filter(
         (trap) => !trap.TrapObject || !trap.TrapTrigger
       );
-      if (!incompleteTrap) {
-        setIsAddingTrap(false);
+      if (!incompleteTraps.length) {
+        setIsAddingTrap(null);
         return;
       }
-      alert("Complete adding trap");
+      alert("Complete adding previous trap");
     }
+  };
+
+  const handleRemoveBlock = (blockIndex: number) => {
+    setLevelData((prevData) => {
+      if (!prevData) return prevData;
+
+      const newData = { ...prevData };
+
+      // Remove from SpawnObjects
+      const initialSpawnObjectsLength = newData.SpawnObjects.length;
+      newData.SpawnObjects = newData.SpawnObjects.filter(
+        (obj) => obj.NodeIndex !== blockIndex
+      );
+
+      // Remove from Enemies
+      const initialEnemiesLength = newData.Enemies.length;
+      newData.Enemies = newData.Enemies.filter(
+        (enemy) => enemy.Object.NodeIndex !== blockIndex
+      );
+
+      // Remove from NewPaths
+      const initialNewPathsLength = newData.NewPaths.length;
+      newData.NewPaths = newData.NewPaths.filter(
+        (path) => path.IndexA !== blockIndex
+      );
+
+      // Remove from Traps
+      const initialTrapsLength = newData.Traps.length;
+      newData.Traps = newData.Traps.filter(
+        (trap) => trap.TrapObject?.NodeIndex !== blockIndex
+      );
+
+      // Remove from SubNodes only if none of the above were removed
+      if (
+        newData.SpawnObjects.length === initialSpawnObjectsLength &&
+        newData.Enemies.length === initialEnemiesLength &&
+        newData.NewPaths.length === initialNewPathsLength &&
+        newData.Traps.length === initialTrapsLength
+      ) {
+        // First, find the node to be removed
+        const nodeToRemove = newData.SubNodes.find(
+          (subNode) => subNode.Index === blockIndex
+        );
+
+        if (nodeToRemove) {
+          // Find adjacent nodes and remove paths that connect to this node
+          newData.SubNodes.forEach((node) => {
+            if (node.Index !== blockIndex) {
+              // Get relative position to determine path direction
+              let nodeRow = -1,
+                nodeCol = -1,
+                removeRow = -1,
+                removeCol = -1;
+
+              NODES.forEach((row, i) => {
+                const nIndex = row.indexOf(node.Index);
+                const rIndex = row.indexOf(blockIndex);
+                if (nIndex > -1) {
+                  nodeRow = i;
+                  nodeCol = nIndex;
+                }
+                if (rIndex > -1) {
+                  removeRow = i;
+                  removeCol = rIndex;
+                }
+              });
+
+              // Check if nodes are adjacent and remove the corresponding path
+              if (removeRow === nodeRow - 1 && removeCol === nodeCol) {
+                // Node to remove is above current node (path 0)
+                node.Paths = node.Paths.filter((p) => p !== 0);
+              } else if (removeCol === nodeCol + 1 && removeRow === nodeRow) {
+                // Node to remove is to the right of current node (path 1)
+                node.Paths = node.Paths.filter((p) => p !== 1);
+              } else if (removeRow === nodeRow + 1 && removeCol === nodeCol) {
+                // Node to remove is below current node (path 2)
+                node.Paths = node.Paths.filter((p) => p !== 2);
+              } else if (removeCol === nodeCol - 1 && removeRow === nodeRow) {
+                // Node to remove is to the left of current node (path 3)
+                node.Paths = node.Paths.filter((p) => p !== 3);
+              }
+            }
+          });
+
+          // Finally, remove the node itself
+          newData.SubNodes = newData.SubNodes.filter(
+            (subNode) => subNode.Index !== blockIndex
+          );
+        }
+
+        // Also handle NewPaths[0].NodesToUnlock if it exists
+        if (newData.NewPaths?.[0]?.NodesToUnlock) {
+          // Find the node to be removed
+          const newPathNodeToRemove = newData.NewPaths[0].NodesToUnlock.find(
+            (subNode) => subNode.Index === blockIndex
+          );
+
+          if (newPathNodeToRemove) {
+            // Find adjacent nodes and remove paths that connect to this node
+            newData.NewPaths[0].NodesToUnlock.forEach((node) => {
+              if (node.Index !== blockIndex) {
+                // Get relative position to determine path direction
+                let nodeRow = -1,
+                  nodeCol = -1,
+                  removeRow = -1,
+                  removeCol = -1;
+
+                NODES.forEach((row, i) => {
+                  const nIndex = row.indexOf(node.Index);
+                  const rIndex = row.indexOf(blockIndex);
+                  if (nIndex > -1) {
+                    nodeRow = i;
+                    nodeCol = nIndex;
+                  }
+                  if (rIndex > -1) {
+                    removeRow = i;
+                    removeCol = rIndex;
+                  }
+                });
+
+                // Check if nodes are adjacent and remove the corresponding path
+                if (removeRow === nodeRow - 1 && removeCol === nodeCol) {
+                  // Node to remove is above current node (path 0)
+                  node.Paths = node.Paths.filter((p) => p !== 0);
+                } else if (removeCol === nodeCol + 1 && removeRow === nodeRow) {
+                  // Node to remove is to the right of current node (path 1)
+                  node.Paths = node.Paths.filter((p) => p !== 1);
+                } else if (removeRow === nodeRow + 1 && removeCol === nodeCol) {
+                  // Node to remove is below current node (path 2)
+                  node.Paths = node.Paths.filter((p) => p !== 2);
+                } else if (removeCol === nodeCol - 1 && removeRow === nodeRow) {
+                  // Node to remove is to the left of current node (path 3)
+                  node.Paths = node.Paths.filter((p) => p !== 3);
+                }
+              }
+            });
+
+            // Finally, remove the node itself
+            newData.NewPaths[0].NodesToUnlock =
+              newData.NewPaths[0].NodesToUnlock.filter(
+                (subNode) => subNode.Index !== blockIndex
+              );
+          }
+        }
+      }
+
+      return newData;
+    });
   };
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold mb-4">Level Generator</h1>
-        <button
-          className={`px-4 py-2 text-white rounded ${
-            isAddingTrap ? "bg-red-800" : "bg-blue-600"
-          }`}
-          onClick={onAddTrap}
-        >
-          Add Trap
-        </button>
-        <button
-          className="px-4 py-2 bg-red-800 text-white rounded"
-          onClick={handleReset}
-        >
-          Reset
-        </button>
-      </div>
-      {levelData && (
-        <Grid
-          isAddingTrap={isAddingTrap}
-          onAddTrapObject={handleAddTrapObject}
-          onAddTrapTrigger={handleAddTrapTrigger}
-          onAddEnemy={handleAddEnemy}
-          onAddPath={handleAddPath}
-          onNormalClick={handleNormalClick}
-          onStartSelect={handleStartSelect}
-          onEndSelect={handleEndSelect}
-          onAddCageKey={handleAddCageKey}
-          onAddCageReward={handleAddCageReward}
-          onAddDamageNode={handleAddDamageNode}
-          onAddNewPathIndexA={handleAddNewPathIndexA}
-          onAddNewPathIndexB={handleAddNewPathIndexB}
-          onAddNewPath={handleAddNewPath}
-          data={levelData}
-        />
-      )}
-      <div className="mt-4 flex flex-col space-y-4">
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={generateJumpNodes}
-        >
-          Save
-        </button>
-      </div>
-      {levelData && <LevelPreview levelData={levelData} />}
-      <div className="fixed right-0 top-0 p-2 bg-gray-700 shadow-md">
-        <h4 className="font-bold">Key Instructions</h4>
-        <ul>
-          {keyInstructions.map((instruction) => (
-            <li key={instruction.key}>
-              <strong>{instruction.key.toUpperCase()}</strong>:{" "}
-              {instruction.action}
-            </li>
-          ))}
-        </ul>
-        <h4 className="font-bold mt-2">AABR</h4>
-        <ul>
-          {Object.entries(aabr).map(([key, value]) => (
-            <li key={key}>
-              <strong>{key}</strong>: {value}
-            </li>
-          ))}
-        </ul>
+      <div className="flex flex-1">
+        <div>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold mb-4">Level Generator</h1>
+            <div className="flex gap-2 items-center">
+              <button
+                className={`px-4 py-2 text-white rounded ${
+                  isAddingTrap?.type === "Turret" ? "bg-red-800" : "bg-blue-600"
+                }`}
+                onClick={() => onAddTrap("Turret")}
+              >
+                Add Turret
+              </button>
+              <button
+                className={`px-4 py-2 text-white rounded ${
+                  isAddingTrap?.type === "Wall" ? "bg-red-800" : "bg-blue-600"
+                }`}
+                onClick={() => onAddTrap("Wall")}
+              >
+                Add Wall
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+                onClick={generateJumpNodes}
+              >
+                Save
+              </button>
+              <button
+                className="px-4 py-2 bg-red-800 text-white rounded"
+                onClick={handleReset}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          {levelData && (
+            <Grid
+              isAddingTrap={isAddingTrap}
+              onAddTrapObject={handleAddTrapObject}
+              onAddTrapTrigger={handleAddTrapTrigger}
+              onAddEnemy={handleAddEnemy}
+              onAddPath={handleAddPath}
+              onNormalClick={handleRemoveBlock}
+              onStartSelect={handleStartSelect}
+              onEndSelect={handleEndSelect}
+              onAddCageKey={handleAddCageKey}
+              onAddCageReward={handleAddCageReward}
+              onAddDamageNode={handleAddDamageNode}
+              onAddNewPathIndexA={handleAddNewPathIndexA}
+              onAddNewPathIndexB={handleAddNewPathIndexB}
+              onAddNewPath={handleAddNewPath}
+              data={levelData}
+            />
+          )}
+          {levelData && <LevelPreview levelData={levelData} />}
+        </div>
+        <div className="relative">
+          <div className="fixed right-0 top-0 p-2 bg-gray-700 shadow-md flex flex-col  items-start">
+            <h4 className="font-bold">Key Instructions</h4>
+            <ul className="flex flex-col gap-2 items-start">
+              {keyInstructions.map((instruction) => (
+                <li key={instruction.key}>
+                  <strong>{instruction.key.toUpperCase()}</strong>:{" "}
+                  {instruction.action}
+                </li>
+              ))}
+            </ul>
+            <h4 className="font-bold mt-2">AABR</h4>
+            <ul className="flex flex-col gap-2 items-start">
+              {Object.entries(aabr).map(([key, value]) => (
+                <li key={key}>
+                  <strong>{key}</strong>: {value}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

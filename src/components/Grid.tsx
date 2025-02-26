@@ -14,9 +14,12 @@ interface GridProps {
   onAddDamageNode: (blockIndex: number) => void;
   onAddNewPathIndexA: (blockIndex: number) => void;
   onAddNewPathIndexB: (blockIndex: number) => void;
-  onAddNewPath: (blockIndex: number) => void;
+  onAddNewPath: (blockIndex: number, prevBlockIndex?: number) => void;
   data: Level;
-  isAddingTrap: boolean;
+  isAddingTrap: {
+    type: "Turret" | "Wall";
+    index: number;
+  } | null;
   onAddTrapObject: (blockIndex: number, direction: number) => void;
   onAddTrapTrigger: (blockIndex: number, direction: number) => void;
 }
@@ -39,6 +42,7 @@ const Grid: React.FC<GridProps> = ({
   data,
 }) => {
   const [prevClickedIndex, setPrevClickedIndex] = useState<number>();
+  const [prevNewPathData, setPrevNewPathData] = useState<number>();
   return (
     <div className="grid grid-cols-20">
       {NODES.map((row) =>
@@ -71,7 +75,10 @@ const Grid: React.FC<GridProps> = ({
             onAddDamageNode={(currIndex) => onAddDamageNode(currIndex)}
             onAddNewPathIndexA={(currIndex) => onAddNewPathIndexA(currIndex)}
             onAddNewPathIndexB={(currIndex) => onAddNewPathIndexB(currIndex)}
-            onAddNewPath={(currIndex) => onAddNewPath(currIndex)}
+            onAddNewPath={(currIndex) => {
+              onAddNewPath(currIndex, prevNewPathData);
+              setPrevNewPathData(currIndex);
+            }}
           />
         ))
       )}

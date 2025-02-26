@@ -27,7 +27,7 @@ const LevelPreview: React.FC<LevelPreviewProps> = ({ levelData }) => {
   };
 
   return (
-    <div className="mt-4 h-[500px] overflow-y-auto">
+    <div className="mt-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold mb-2">Level Preview</h2>
         <button
@@ -37,7 +37,7 @@ const LevelPreview: React.FC<LevelPreviewProps> = ({ levelData }) => {
           Download JSON
         </button>
       </div>
-      <div className="mt-3">
+      <div className="mt-3 h-[500px] overflow-y-auto">
         <Editor
           minWidth={800}
           data={editableRegion}
