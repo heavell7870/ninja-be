@@ -55,6 +55,7 @@ export const AddEnemyModal: React.FC<AddEnemyModalProps> = ({
       setType(enemyData.Type);
       setSpawnable(enemyData.Spawnable);
       setRotateAntiClockwise(enemyData.RotateAntiClockwise);
+      setDirection(enemyData.Object?.CustomTransform?.eulerAngles?.y);
     }
   }, [enemyData]);
 

@@ -14,6 +14,7 @@ interface GridProps {
   onAddDamageNode: (blockIndex: number) => void;
   onAddNewPathIndexA: (blockIndex: number) => void;
   onAddNewPathIndexB: (blockIndex: number) => void;
+  onLaserSelect: (blockIndex: number, angle: number) => void;
   onAddNewPath: (blockIndex: number, prevBlockIndex?: number) => void;
   data: Level;
   isAddingTrap: {
@@ -39,6 +40,7 @@ const Grid: React.FC<GridProps> = ({
   onAddNewPath,
   onAddTrapObject,
   onAddTrapTrigger,
+  onLaserSelect,
   data,
 }) => {
   const [prevClickedIndex, setPrevClickedIndex] = useState<number>();
@@ -75,6 +77,9 @@ const Grid: React.FC<GridProps> = ({
             onAddDamageNode={(currIndex) => onAddDamageNode(currIndex)}
             onAddNewPathIndexA={(currIndex) => onAddNewPathIndexA(currIndex)}
             onAddNewPathIndexB={(currIndex) => onAddNewPathIndexB(currIndex)}
+            onLaserSelect={(currIndex, angle) =>
+              onLaserSelect(currIndex, angle)
+            }
             onAddNewPath={(currIndex) => {
               onAddNewPath(currIndex, prevNewPathData);
               setPrevNewPathData(currIndex);

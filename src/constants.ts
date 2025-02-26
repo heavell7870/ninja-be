@@ -145,6 +145,7 @@ export const aabr = {
   enemyStrongMoving: "EMS",
   trap: "T",
   trigger: "TR",
+  laser: "L",
   none: "",
   selected: "X",
   key: "K",

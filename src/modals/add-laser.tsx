@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { EULER_ANGLES_Y } from "../constants";
 import { SpawnObject } from "../types";
-interface AddStartModalProps {
-  spawnObject?: SpawnObject;
+
+interface AddLaserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  spawnObject?: SpawnObject;
   onSubmit: (direction: number) => void;
 }
 
@@ -32,17 +33,13 @@ const customStyles = {
 
 Modal.setAppElement("#root");
 
-export const AddStartModal: React.FC<AddStartModalProps> = ({
-  spawnObject,
+export const AddLaserModal: React.FC<AddLaserModalProps> = ({
   isOpen,
   onClose,
+  spawnObject,
   onSubmit,
 }) => {
   const [direction, setDirection] = useState<number>(0);
-  const handleDirectionSelect = (direction: number) => {
-    onSubmit(direction);
-    onClose();
-  };
 
   useEffect(() => {
     if (spawnObject) {
@@ -50,15 +47,20 @@ export const AddStartModal: React.FC<AddStartModalProps> = ({
     }
   }, [spawnObject]);
 
+  const handleDirectionSelect = (direction: number) => {
+    onSubmit(direction);
+    onClose();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
       style={customStyles}
-      contentLabel="Select Start Direction"
+      contentLabel="Select Laser Direction"
     >
       <h2 className="text-xl font-bold mb-4 text-gray-100">
-        Select Start Direction
+        Select Laser Direction
       </h2>
       <div className="grid grid-cols-3 gap-2 w-48 mx-auto mb-4">
         <div className="col-start-2">

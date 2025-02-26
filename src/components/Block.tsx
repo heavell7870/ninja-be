@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { EnemyData, Level, SubNode } from "../types";
+import { Enemy, EnemyData, Level, SpawnObject, SubNode } from "../types";
 import { AddEnemyModal } from "../modals/add-enemy";
 import { AddStartModal } from "../modals/add-start";
 import { aabr } from "../constants";
 import { AddTrapModal } from "../modals/add-trap-Trigger";
+import { AddLaserModal } from "../modals/add-laser";
 
 interface BlockProps {
   isAddingTrap: {
@@ -17,6 +18,7 @@ interface BlockProps {
   onAddPath: (currBlockIndex: number) => void;
   onNormalClick: (blockIndex: number) => void;
   onStartSelect: (blockIndex: number, angle: number) => void;
+  onLaserSelect: (blockIndex: number, angle: number) => void;
   onEndSelect: (blockIndex: number) => void;
   onAddCageKey: (blockIndex: number) => void;
   onAddCageReward: (blockIndex: number) => void;
@@ -60,6 +62,7 @@ const Block: React.FC<BlockProps> = ({
   onAddEnemy,
   onAddNewPath,
   onStartSelect,
+  onLaserSelect,
   onEndSelect,
   onAddPath,
   onNormalClick,
@@ -78,10 +81,18 @@ const Block: React.FC<BlockProps> = ({
   const [clickedIndex, setClickedIndex] = useState<number>();
   const [isAddEnemyModalOpen, setIsAddEnemyModalOpen] = useState(false);
   const [startModal, setStartModal] = useState(false);
+  const [laserModal, setLaserModal] = useState(false);
+  const [enemyData, setEnemyData] = useState<Enemy>();
+  const [spawnObject, setSpawnObject] = useState<SpawnObject[]>([]);
   const [trapModal, setTrapModal] = useState<"trigger" | "trap" | null>(null);
   const [pressedKey, setPressedKey] = useState<string>("");
   const [blockTypes, setBlockTypes] = useState<string[]>([]);
-
+  const [blockTypeIndex, setBlockTypeIndex] = useState<
+    {
+      index: number;
+      abbr: string;
+    }[]
+  >([]);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       setPressedKey(event.key?.toLowerCase());
@@ -163,7 +174,10 @@ const Block: React.FC<BlockProps> = ({
       setIsAddEnemyModalOpen(true);
       return;
     }
-
+    if (pressedKey === "l") {
+      setLaserModal(true);
+      return;
+    }
     onNormalClick(blockIndex);
   };
 
@@ -200,6 +214,8 @@ const Block: React.FC<BlockProps> = ({
         return "bg-slate-500"; // Yellow for new path index A
       case "newPathIndexB":
         return "bg-lime-500"; // Lime for new path index B
+      case "laser":
+        return "bg-amber-500"; // Amber for laser
       default:
         return "bg-gray-400"; // Default gray
     }
@@ -231,6 +247,7 @@ const Block: React.FC<BlockProps> = ({
     // Check if block is start position (first SubNode)
     const spawnNode = data.SpawnObjects.find((spawn) => spawn.Tag === "Player");
     if (spawnNode?.NodeIndex === blockIndex) {
+      setSpawnObject((prev) => [...prev, spawnNode]);
       types.push("start");
     }
 
@@ -245,6 +262,7 @@ const Block: React.FC<BlockProps> = ({
       (enemy) => enemy.Object.NodeIndex === blockIndex
     );
     if (enemy) {
+      setEnemyData(enemy);
       switch (enemy.Type) {
         case "Static":
           types.push("enemyStatic");
@@ -266,7 +284,14 @@ const Block: React.FC<BlockProps> = ({
       (trap) => trap.TrapObject?.NodeIndex === blockIndex
     );
     if (trap) {
+      const trapIndex = data.Traps.findIndex(
+        (trap) => trap.TrapObject?.NodeIndex === blockIndex
+      );
       types.push("trap");
+      setBlockTypeIndex((prev) => [
+        ...prev,
+        { index: trapIndex, abbr: "trap" },
+      ]);
     }
 
     // Check if block has a trigger
@@ -274,7 +299,14 @@ const Block: React.FC<BlockProps> = ({
       (trap) => trap.TrapTrigger?.NodeIndex === blockIndex
     );
     if (trigger) {
+      const triggerIndex = data.Traps.findIndex(
+        (trap) => trap.TrapTrigger?.NodeIndex === blockIndex
+      );
       types.push("trigger");
+      setBlockTypeIndex((prev) => [
+        ...prev,
+        { index: triggerIndex, abbr: "trigger" },
+      ]);
     }
 
     // Check if block is a damage node
@@ -299,6 +331,15 @@ const Block: React.FC<BlockProps> = ({
     );
     if (isRewardCage) {
       types.push("rewardCage");
+    }
+
+    // Check if block is a laser
+    const isLaser = data.SpawnObjects?.find(
+      (spawn) => spawn.Tag === "Turret" && spawn.NodeIndex === blockIndex
+    );
+    if (isLaser) {
+      setSpawnObject((prev) => [...prev, isLaser]);
+      types.push("laser");
     }
 
     // Check if block is a new path index A
@@ -346,13 +387,20 @@ const Block: React.FC<BlockProps> = ({
   // Create a display string for multiple block types
   const getBlockTypeDisplay = () => {
     if (blockTypes.length === 0) return "";
-    if (blockTypes.length === 1)
-      return aabr[blockTypes[0] as keyof typeof aabr] || "";
+    if (blockTypes.length === 1) {
+      const typeDisplay = `${aabr[blockTypes[0] as keyof typeof aabr]} ${
+        blockTypeIndex.find((type) => type.abbr === blockTypes[0])?.index || ""
+      }`;
+      return typeDisplay || "";
+    }
 
     // For multiple types, show the first letter of each type
     return blockTypes
-      .map((type) =>
-        (aabr[type as keyof typeof aabr] || type.charAt(0)).toUpperCase()
+      .map(
+        (type) =>
+          `${aabr[type as keyof typeof aabr] || type.charAt(0)} ${
+            blockTypeIndex.find((btype) => btype.abbr === type)?.index || ""
+          }`
       )
       .join("/");
   };
@@ -394,14 +442,22 @@ const Block: React.FC<BlockProps> = ({
         </button>
       </div>
       <AddEnemyModal
+        enemyData={enemyData}
         isOpen={isAddEnemyModalOpen}
         onClose={() => setIsAddEnemyModalOpen(false)}
         onSubmit={handleAddEnemy}
       />
       <AddStartModal
+        spawnObject={spawnObject.find((spawn) => spawn.Tag === "Player")}
         isOpen={startModal}
         onClose={() => setStartModal(false)}
         onSubmit={(direction) => onStartSelect(blockIndex, direction)}
+      />
+      <AddLaserModal
+        spawnObject={spawnObject.find((spawn) => spawn.Tag === "Turret")}
+        isOpen={laserModal}
+        onClose={() => setLaserModal(false)}
+        onSubmit={(direction) => onLaserSelect(blockIndex, direction)}
       />
       <AddTrapModal
         isTrigger={trapModal === "trigger"}

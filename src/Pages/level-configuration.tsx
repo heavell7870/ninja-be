@@ -1140,6 +1140,23 @@ const LevelConfiguration: React.FC = () => {
     });
   };
 
+  const handleAddLaser = (blockIndex: number, direction: number) => {
+    setLevelData((prevData) => {
+      if (!prevData) return prevData;
+      const newData = { ...prevData };
+      newData.SpawnObjects.push({
+        Tag: "Turret",
+        NodeIndex: blockIndex,
+        CustomTransform: {
+          position: { x: 0, y: 0, z: 0 },
+          eulerAngles: { x: 0, y: direction, z: 0 },
+          localScale: { x: 0, y: 0, z: 0 },
+        },
+      });
+      return newData;
+    });
+  };
+
   return (
     <div className="p-4">
       <div className="flex flex-1">
@@ -1192,6 +1209,7 @@ const LevelConfiguration: React.FC = () => {
               onAddDamageNode={handleAddDamageNode}
               onAddNewPathIndexA={handleAddNewPathIndexA}
               onAddNewPathIndexB={handleAddNewPathIndexB}
+              onLaserSelect={handleAddLaser}
               onAddNewPath={handleAddNewPath}
               data={levelData}
             />
