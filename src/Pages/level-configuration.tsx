@@ -652,15 +652,35 @@ const LevelConfiguration: React.FC = () => {
     setLevelData((prevData) => {
       if (!prevData) return prevData;
       const newData = { ...prevData };
-      newData.SpawnObjects.push({
-        Tag: "Player",
-        NodeIndex: blockIndex,
-        CustomTransform: {
-          position: { x: 0, y: 0, z: 0 },
-          eulerAngles: { x: 0, y: angle, z: 0 },
-          localScale: { x: 0, y: 0, z: 0 },
-        },
-      });
+
+      // Check if Player object already exists
+      const playerIndex = newData.SpawnObjects.findIndex(
+        (obj) => obj.Tag === "Player"
+      );
+
+      if (playerIndex !== -1) {
+        // Update existing player object
+        newData.SpawnObjects[playerIndex] = {
+          ...newData.SpawnObjects[playerIndex],
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            ...newData.SpawnObjects[playerIndex].CustomTransform,
+            eulerAngles: { x: 0, y: angle, z: 0 },
+          },
+        };
+      } else {
+        // Add new player object
+        newData.SpawnObjects.push({
+          Tag: "Player",
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: angle, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        });
+      }
+
       return newData;
     });
   };
@@ -678,32 +698,75 @@ const LevelConfiguration: React.FC = () => {
     setLevelData((prevData) => {
       if (!prevData) return prevData;
       const newData = { ...prevData };
-      newData.SpawnObjects.push({
-        Tag: "Key",
-        NodeIndex: blockIndex,
-        CustomTransform: {
-          position: { x: 0, y: 0, z: 0 },
-          eulerAngles: { x: 0, y: 0, z: 0 },
-          localScale: { x: 0, y: 0, z: 0 },
-        },
-      });
+
+      // Check if Key object already exists
+      const keyIndex = newData.SpawnObjects.findIndex(
+        (obj) => obj.Tag === "Key"
+      );
+
+      if (keyIndex !== -1) {
+        // Update existing key object
+        newData.SpawnObjects[keyIndex] = {
+          ...newData.SpawnObjects[keyIndex],
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            ...newData.SpawnObjects[keyIndex].CustomTransform,
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: 0, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        };
+      } else {
+        // Add new key object
+        newData.SpawnObjects.push({
+          Tag: "Key",
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: 0, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        });
+      }
+
       return newData;
     });
   };
-
   const handleAddCageReward = (blockIndex: number) => {
     setLevelData((prevData) => {
       if (!prevData) return prevData;
       const newData = { ...prevData };
-      newData.SpawnObjects.push({
-        Tag: "RewardCage",
-        NodeIndex: blockIndex,
-        CustomTransform: {
-          position: { x: 0, y: 0, z: 0 },
-          eulerAngles: { x: 0, y: 0, z: 0 },
-          localScale: { x: 0, y: 0, z: 0 },
-        },
-      });
+
+      // Check if RewardCage object already exists
+      const rewardCageIndex = newData.SpawnObjects.findIndex(
+        (obj) => obj.Tag === "RewardCage"
+      );
+
+      if (rewardCageIndex !== -1) {
+        // Update existing reward cage object
+        newData.SpawnObjects[rewardCageIndex] = {
+          ...newData.SpawnObjects[rewardCageIndex],
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            ...newData.SpawnObjects[rewardCageIndex].CustomTransform,
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: 0, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        };
+      } else {
+        // Add new reward cage object
+        newData.SpawnObjects.push({
+          Tag: "RewardCage",
+          NodeIndex: blockIndex,
+          CustomTransform: {
+            position: { x: 0, y: 0, z: 0 },
+            eulerAngles: { x: 0, y: 0, z: 0 },
+            localScale: { x: 0, y: 0, z: 0 },
+          },
+        });
+      }
+
       return newData;
     });
   };
