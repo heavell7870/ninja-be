@@ -415,7 +415,6 @@ const Block: React.FC<BlockProps> = ({
           <DirectionBox type="newPath" key={path} direction={path} />
         ))}
         <button
-          disabled={isDisabled}
           className={`w-10 z-10 h-10 border border-gray-300 flex items-center justify-center cursor-pointer text-[10px] font-bold text-black overflow-hidden text-wrap break-all ${getBlockColor(
             blockTypes[0] || "none"
           )} ${isDisabled ? "!cursor-not-allowed" : ""}`}
